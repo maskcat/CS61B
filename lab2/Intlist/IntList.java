@@ -124,6 +124,19 @@ public class IntList {
         return list;
     }
 
+    public int size() {
+        if (rest == null) {
+            return 1;
+        }
+        return 1 + this.rest.size();
+    }
+
+    public int get(int i) {
+        if (i == 0) {
+            return first;
+        }
+        return rest.get(i - 1);
+    }
 
     /**
      * DO NOT MODIFY ANYTHING BELOW THIS LINE! Many of the concepts below here
