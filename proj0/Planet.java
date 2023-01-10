@@ -14,6 +14,7 @@ public class Planet {
         this.mass = mass;
         this.imgFileName = imgFileName;
     }
+
     public Planet(Planet p) {
         this.xxPos = p.xxPos;
         this.yyPos = p.yyPos;
@@ -21,5 +22,11 @@ public class Planet {
         this.yyVel = p.yyVel;
         this.mass = p.mass;
         this.imgFileName = p.imgFileName;
+    }
+
+    public double calcDistance(Planet p) {
+        double dx = p.xxPos - this.xxPos;
+        double dy = p.yyPos - this.yyPos;
+        return Math.sqrt(Math.pow(dx, 2d) + Math.pow(dy, 2d));
     }
 }
