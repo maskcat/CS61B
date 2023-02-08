@@ -81,13 +81,13 @@ public class LinkedListDeque<T> {
 
     public T get(int index) {
         int i = 0;
-        LinkedListDeque<T> temp = this;
+        DequeNode<T> temp = this.sentinel.next;
         while (i < this.size) {
             if (index == i) {
-                return temp.sentinel.next.item;
+                return temp.item;
             }
             i += 1;
-            temp.sentinel.next = temp.sentinel.next.next;
+            temp = temp.next;
         }
         return null;
     }
