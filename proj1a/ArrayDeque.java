@@ -12,8 +12,8 @@ public class ArrayDeque<T> {
     }
 
     public void addFirst(T item) {
-        if (this.size == this.items.length) {
-            resize(2 * this.size);
+        if (this.nextLast == this.nextFirst) {
+            resize(2 * this.items.length);
         }
         this.items[this.nextFirst] = item;
         if (this.nextFirst == 0 && this.size < this.items.length) {
@@ -25,7 +25,7 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T item) {
-        if (this.size == this.items.length) {
+        if (this.nextLast == this.nextFirst) {
             resize(2 * this.size);
         }
         this.items[this.nextLast] = item;
