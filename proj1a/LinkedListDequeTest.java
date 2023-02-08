@@ -1,4 +1,5 @@
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Performs some basic linked list tests.
@@ -39,7 +40,8 @@ public class LinkedListDequeTest {
      * <p>
      * && is the "and" operation.
      */
-    public static void addIsEmptySizeTest() {
+    @Test
+    public void addIsEmptySizeTest() {
         System.out.println("Running add/isEmpty/Size test.");
 //		System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
         LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
@@ -68,7 +70,8 @@ public class LinkedListDequeTest {
     /**
      * Adds an item, then removes an item, and ensures that dll is empty afterwards.
      */
-    public static void addRemoveTest() {
+    @Test
+    public void addRemoveTest() {
 
         System.out.println("Running add/remove test.");
 
@@ -87,21 +90,21 @@ public class LinkedListDequeTest {
 
         printTestStatus(passed);
     }
-    public static void getTest(){
+    @Test
+    public void addRemoveGetTest(){
         LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
-        // should be empty
-        boolean passed = checkEmpty(true, lld1.isEmpty());
         lld1.addFirst(3);
         lld1.addFirst(2);
         lld1.addFirst(1);
-        Integer item = lld1.getRecursive(3);
-        System.out.println(item == null);
+        lld1.addLast(4);
+        long last = lld1.removeLast().longValue();
+        long first = lld1.removeFirst().longValue();
+        long item0 = lld1.get(0).longValue();
+        long item1 = lld1.get(1).longValue();
+        Assert.assertEquals(last,4);
+        Assert.assertEquals(first,1);
+        Assert.assertEquals(item0,2);
+        Assert.assertEquals(item1,3);
     }
 
-    public static void main(String[] args) {
-        System.out.println("Running tests.\n");
-        addIsEmptySizeTest();
-        addRemoveTest();
-        getTest();
-    }
 } 
