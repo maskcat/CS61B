@@ -15,6 +15,7 @@ public class ArrayDequeTest {
         ad1.addLast(7);
         ad1.addLast(8);
         Integer item0 = ad1.get(0);
+        Integer item5 = ad1.get(5);
     }
     @Test
     public void removeTest() {

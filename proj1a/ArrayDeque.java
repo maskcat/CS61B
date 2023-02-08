@@ -53,7 +53,7 @@ public class ArrayDeque<T> {
     }
 
     public T removeFirst() {
-        int firstIndex = getIndex(0);
+        int firstIndex = index(0);
         T first = this.items[firstIndex];
         this.items[firstIndex] = null;
         if (this.nextFirst == this.items.length - 1) {
@@ -66,7 +66,7 @@ public class ArrayDeque<T> {
     }
 
     public T removeLast() {
-        int lastIndex = getIndex(this.size);
+        int lastIndex = index(this.size);
         T last = this.items[lastIndex];
         this.items[lastIndex] = null;
         if (this.nextLast == 0) {
@@ -79,12 +79,12 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        return this.items[getIndex(index)];
+        return this.items[index(index)];
     }
 
-    private int getIndex(int index) {
+    private int index(int index) {
         int start = this.nextFirst + 1;
-        return start + index > this.size - 1 ? start + index - this.size : start + index;
+        return start + index > this.items.length - 1 ? start + index - this.size : start + index;
     }
 
     private void resize(int newSize) {
@@ -92,7 +92,7 @@ public class ArrayDeque<T> {
         int nl = (newSize - this.size) / 2;
         int nf = nl - 1;
         for (int i = 0; i < this.size; i++) {
-            newItems[nl] = this.items[getIndex(i)];
+            newItems[nl] = this.items[index(i)];
             nl += 1;
         }
         this.nextFirst = nf;
