@@ -91,21 +91,12 @@ public class ArrayDeque<T> {
         T[] newItems = (T[]) new Object[newSize];
         int nl = (newSize - this.size) / 2;
         int nf = nl - 1;
-        int index = this.nextFirst - 1;
         for (int i = 0; i < this.size; i++) {
-            newItems[nl] = this.items[index];
+            newItems[nl] = this.items[getIndex(i)];
             nl += 1;
-            index += 1;
-            if (index == this.size) {
-                index = 0;
-            }
         }
-        this.nextFirst = nf - 1;
+        this.nextFirst = nf;
         this.items = newItems;
         this.nextLast = nl;
-    }
-
-    public T[] getItems() {
-        return this.items;
     }
 }
