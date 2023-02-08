@@ -24,6 +24,7 @@ public class ArrayDequeTest {
 
         // resize
         ad1.addFirst(9);
+        Integer item0 = ad1.get(0);
     }
     @Test
     public void removeTest() {

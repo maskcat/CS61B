@@ -1,10 +1,10 @@
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> {
     private int nextFirst;
     private T[] items;
     private int nextLast;
     private int size;
 
-    ArrayDeque() {
+    public ArrayDeque() {
         this.items = (T[]) new Object[8];
         this.nextFirst = this.items.length / 2 - 1;
         this.nextLast = this.nextFirst + 1;
@@ -79,7 +79,7 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     public T get(int index) {
-        return items[getIndex(index)];
+        return this.items[getIndex(index)];
     }
 
     private int getIndex(int index) {

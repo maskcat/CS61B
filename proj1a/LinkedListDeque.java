@@ -1,4 +1,4 @@
-public class LinkedListDeque<T> implements Deque<T> {
+public class LinkedListDeque<T> {
     private class DequeNode<T> {
         private DequeNode<T> prev;
         private T item;
