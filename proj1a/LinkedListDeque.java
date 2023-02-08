@@ -93,7 +93,7 @@ public class LinkedListDeque<T> {
     }
 
     public T getRecursive(int index) {
-        return getRecursiveHelp(0, index, this.sentinel);
+        return getRecursiveHelp(0, index, this.sentinel.next);
     }
 
     private T getRecursiveHelp(int start, int index, DequeNode<T> temp) {
@@ -101,7 +101,7 @@ public class LinkedListDeque<T> {
             return null;
         }
         if (start == index) {
-            return temp.next.item;
+            return temp.item;
         }
         return getRecursiveHelp(start + 1, index, temp.next);
     }
