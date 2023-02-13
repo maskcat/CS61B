@@ -90,8 +90,9 @@ public class LinkedListDequeTest {
 
         printTestStatus(passed);
     }
+
     @Test
-    public void addRemoveGetTest(){
+    public void addRemoveGetTest() {
         LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
         lld1.addFirst(3);
         lld1.addFirst(2);
@@ -101,10 +102,10 @@ public class LinkedListDequeTest {
         long first = lld1.removeFirst().longValue();
         long item0 = lld1.get(0).longValue();
         long item1 = lld1.get(1).longValue();
-        Assert.assertEquals(last,4);
-        Assert.assertEquals(first,1);
-        Assert.assertEquals(item0,2);
-        Assert.assertEquals(item1,3);
+        Assert.assertEquals(last, 4);
+        Assert.assertEquals(first, 1);
+        Assert.assertEquals(item0, 2);
+        Assert.assertEquals(item1, 3);
     }
 
 } 

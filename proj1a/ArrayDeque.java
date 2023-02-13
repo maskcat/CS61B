@@ -61,7 +61,9 @@ public class ArrayDeque<T> {
         } else {
             this.nextFirst += 1;
         }
-        this.size -= 1;
+        if (this.size > 0) {
+            this.size -= 1;
+        }
         return first;
     }
 
@@ -74,7 +76,9 @@ public class ArrayDeque<T> {
         } else {
             this.nextLast -= 1;
         }
-        this.size -= 1;
+        if (this.size > 0) {
+            this.size -= 1;
+        }
         return last;
     }
 
