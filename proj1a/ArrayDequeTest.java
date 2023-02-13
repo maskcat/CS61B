@@ -11,15 +11,11 @@ public class ArrayDequeTest {
         ad1.addLast(3);
         ad1.addLast(4);
         ad1.addLast(5);
-        ad1.addFirst(6);
+        ad1.addLast(6);
         ad1.addFirst(7);
-        ad1.removeFirst();
-        ad1.removeFirst();
-        ad1.removeFirst();
-        ad1.removeFirst();
-        ad1.removeFirst();
-        ad1.removeFirst();
-        ad1.removeFirst();
+        ad1.addFirst(8);
+        int item01 = ad1.get(6);
+
     }
     @Test
     public void removeTest() {

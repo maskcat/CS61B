@@ -46,8 +46,8 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for (int i = 0;i<this.size;i++){
-            System.out.print(get(i)+" ");
+        for (int i = 0; i < this.size; i++) {
+            System.out.print(get(i) + " ");
         }
         System.out.println();
     }
@@ -79,12 +79,13 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        return this.items[index(index)];
+        int i = index(index);
+        return this.items[i];
     }
 
     private int index(int index) {
         int start = this.nextFirst + 1;
-        return start + index > this.size ? start + index - this.size - 1 : start + index;
+        return start + index > this.items.length - 1 ? start + index - this.items.length : start + index;
     }
 
     private void resize(int newSize) {
