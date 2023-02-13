@@ -66,7 +66,7 @@ public class ArrayDeque<T> {
     }
 
     public T removeLast() {
-        int lastIndex = index(this.size);
+        int lastIndex = index(this.size - 1);
         T last = this.items[lastIndex];
         this.items[lastIndex] = null;
         if (this.nextLast == 0) {

@@ -1,9 +1,10 @@
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class ArrayDequeTest {
     @Test
-    public void addResizeTest() {
+    public void addResizeGetTest() {
         ArrayDeque<Integer> ad1 = new ArrayDeque<>();
         ad1.addLast(0);
         ad1.addLast(1);
@@ -16,6 +17,20 @@ public class ArrayDequeTest {
         ad1.addFirst(8);
         int item01 = ad1.get(6);
 
+    }
+    @Test
+    public void resizeNullTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.addLast(0);
+        ad1.addLast(1);
+        ad1.addLast(2);
+        ad1.addLast(3);
+        ad1.addLast(4);
+        ad1.addLast(5);
+        ad1.addLast(6);
+        ad1.addLast(7);
+        Integer first = ad1.removeFirst();
+        Integer last = ad1.removeLast();
     }
     @Test
     public void removeTest() {
