@@ -92,7 +92,11 @@ public class ArrayDeque<T> {
 
     private int index(int index) {
         int start = this.nextFirst + 1;
-        return start + index > this.items.length - 1 ? start + index - this.items.length : start + index;
+        if (start + index > this.items.length - 1) {
+            return start + index - this.items.length;
+        } else {
+            return start + index;
+        }
     }
 
     private void resize(int newSize) {
