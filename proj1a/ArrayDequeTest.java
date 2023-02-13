@@ -33,6 +33,13 @@ public class ArrayDequeTest {
     }
 
     @Test
+    public void emptyRemoveSizeTest() {
+        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+        ad1.removeFirst();
+        Integer last = ad1.size();
+    }
+
+    @Test
     public void removeTest() {
         ArrayDeque<Integer> ad1 = new ArrayDeque<>();
         ad1.addFirst(1);

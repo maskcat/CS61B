@@ -55,30 +55,33 @@ public class ArrayDeque<T> {
     public T removeFirst() {
         int firstIndex = index(0);
         T first = this.items[firstIndex];
+        if (isEmpty()) {
+            return first;
+        }
         this.items[firstIndex] = null;
         if (this.nextFirst == this.items.length - 1) {
             this.nextFirst = 0;
         } else {
             this.nextFirst += 1;
         }
-        if (this.size > 0) {
-            this.size -= 1;
-        }
+        this.size -= 1;
+
         return first;
     }
 
     public T removeLast() {
         int lastIndex = index(this.size - 1);
         T last = this.items[lastIndex];
+        if (isEmpty()) {
+            return last;
+        }
         this.items[lastIndex] = null;
         if (this.nextLast == 0) {
             this.nextLast = this.items.length - 1;
         } else {
             this.nextLast -= 1;
         }
-        if (this.size > 0) {
-            this.size -= 1;
-        }
+        this.size -= 1;
         return last;
     }
 
