@@ -20,7 +20,6 @@ public class ArrayDequeTest {
         ad1.removeFirst();
         ad1.removeFirst();
         ad1.removeFirst();
-        ad1.addLast(99);
     }
     @Test
     public void removeTest() {

@@ -84,7 +84,7 @@ public class ArrayDeque<T> {
 
     private int index(int index) {
         int start = this.nextFirst + 1;
-        return start + index > this.items.length - 1 ? start + index - this.size : start + index;
+        return start + index > this.size ? start + index - this.size - 1 : start + index;
     }
 
     private void resize(int newSize) {
@@ -92,7 +92,8 @@ public class ArrayDeque<T> {
         int nl = (newSize - this.size) / 2;
         int nf = nl - 1;
         for (int i = 0; i < this.size; i++) {
-            newItems[nl] = this.items[index(i)];
+            int index = index(i);
+            newItems[nl] = this.items[index];
             nl += 1;
         }
         this.nextFirst = nf;
