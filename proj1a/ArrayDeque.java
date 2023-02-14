@@ -117,7 +117,8 @@ public class ArrayDeque<T> {
         this.items = newItems;
         this.nextLast = nl;
     }
-    private boolean needShrink (){
+
+    private boolean needShrink() {
         double usageRate = (double) this.size / this.items.length;
         return usageRate <= 0.25d && this.items.length > 8;
     }

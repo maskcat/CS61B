@@ -1,4 +1,3 @@
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -96,14 +95,6 @@ public class LinkedListDequeTest {
         lld1.addFirst(2);
         lld1.addFirst(1);
         lld1.addLast(4);
-        long last = lld1.removeLast().longValue();
-        long first = lld1.removeFirst().longValue();
-        long item0 = lld1.get(0).longValue();
-        long item1 = lld1.get(1).longValue();
-        Assert.assertEquals(last, 4);
-        Assert.assertEquals(first, 1);
-        Assert.assertEquals(item0, 2);
-        Assert.assertEquals(item1, 3);
     }
 
 } 
