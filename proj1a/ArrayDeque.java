@@ -65,7 +65,9 @@ public class ArrayDeque<T> {
             this.nextFirst += 1;
         }
         this.size -= 1;
-
+        if (needShrink()) {
+            resize(this.items.length / 2);
+        }
         return first;
     }
 
@@ -82,6 +84,9 @@ public class ArrayDeque<T> {
             this.nextLast -= 1;
         }
         this.size -= 1;
+        if (needShrink()) {
+            resize(this.items.length / 2);
+        }
         return last;
     }
 
@@ -111,5 +116,12 @@ public class ArrayDeque<T> {
         this.nextFirst = nf;
         this.items = newItems;
         this.nextLast = nl;
+    }
+    private boolean needShrink (){
+        double usageRate = (double) this.size / this.items.length;
+        if (usageRate <= 0.25d) {
+            return true;
+        }
+        return false;
     }
 }
