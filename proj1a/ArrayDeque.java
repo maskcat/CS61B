@@ -12,7 +12,7 @@ public class ArrayDeque<T> {
     }
 
     public void addFirst(T item) {
-        if (this.nextLast == this.nextFirst) {
+        if (this.size == this.items.length) {
             resize(2 * this.items.length);
         }
         this.items[this.nextFirst] = item;
@@ -25,7 +25,7 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T item) {
-        if (this.nextLast == this.nextFirst) {
+        if (this.size == this.items.length) {
             resize(2 * this.size);
         }
         this.items[this.nextLast] = item;
@@ -53,6 +53,9 @@ public class ArrayDeque<T> {
     }
 
     public T removeFirst() {
+        if (needShrink()) {
+            resize(this.items.length / 2);
+        }
         int firstIndex = index(0);
         T first = this.items[firstIndex];
         if (isEmpty()) {
@@ -65,13 +68,13 @@ public class ArrayDeque<T> {
             this.nextFirst += 1;
         }
         this.size -= 1;
-        if (needShrink()) {
-            resize(this.items.length / 2);
-        }
         return first;
     }
 
     public T removeLast() {
+        if (needShrink()) {
+            resize(this.items.length / 2);
+        }
         int lastIndex = index(this.size - 1);
         T last = this.items[lastIndex];
         if (isEmpty()) {
@@ -84,9 +87,6 @@ public class ArrayDeque<T> {
             this.nextLast -= 1;
         }
         this.size -= 1;
-        if (needShrink()) {
-            resize(this.items.length / 2);
-        }
         return last;
     }
 
@@ -119,9 +119,6 @@ public class ArrayDeque<T> {
     }
     private boolean needShrink (){
         double usageRate = (double) this.size / this.items.length;
-        if (usageRate <= 0.25d) {
-            return true;
-        }
-        return false;
+        return usageRate <= 0.25d && this.items.length > 8;
     }
 }

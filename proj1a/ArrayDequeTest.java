@@ -50,6 +50,10 @@ public class ArrayDequeTest {
         ad1.addLast(6);
         ad1.addLast(7);
         ad1.addLast(8);
+        ad1.addLast(9);
+        ad1.removeFirst();
+        ad1.removeFirst();
+        ad1.removeFirst();
         ad1.removeFirst();
         ad1.removeFirst();
         ad1.removeFirst();
