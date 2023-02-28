@@ -10,7 +10,38 @@ public class Palindrome {
         }
         return deque;
     }
+
     public boolean isPalindrome(String word) {
-        return false;
+        Deque<Character> deque = wordToDeque(word);
+        return helpIsPalindrome(deque);
+    }
+
+    public boolean isPalindrome(String word, CharacterComparator cc) {
+        Deque<Character> deque = wordToDeque(word);
+        return helpIsPalindrome(deque, cc);
+    }
+
+    private boolean helpIsPalindrome(Deque<Character> deque) {
+        if (deque.size() == 1 || deque.size() == 0) {
+            return true;
+        }
+        char first = deque.removeFirst();
+        char last = deque.removeLast();
+        if (first != last) {
+            return false;
+        }
+        return helpIsPalindrome(deque);
+    }
+
+    private boolean helpIsPalindrome(Deque<Character> deque, CharacterComparator characterComparator) {
+        if (deque.size() == 1 || deque.size() == 0) {
+            return true;
+        }
+        char first = deque.removeFirst();
+        char last = deque.removeLast();
+        if (!characterComparator.equalChars(first, last)) {
+            return false;
+        }
+        return helpIsPalindrome(deque, characterComparator);
     }
 }
