@@ -22,13 +22,14 @@ public class TestPalindrome {
 
     @Test
     public void testIsPalindrome() {
-        assertFalse(palindrome.isPalindrome("cat"));
+        assertFalse(palindrome.isPalindrome("null"));
         assertTrue(palindrome.isPalindrome("noon"));
         assertTrue(palindrome.isPalindrome("racecar"));
         assertFalse(palindrome.isPalindrome("Racecar"));
         assertTrue(palindrome.isPalindrome("A"));
         assertFalse(palindrome.isPalindrome("Aa"));
         assertTrue(palindrome.isPalindrome("acdb", new OffByOne()));
+        assertFalse(palindrome.isPalindrome("acdb", new OffByN(4)));
     }
     // Uncomment this class once you've created your Palindrome class.
 }

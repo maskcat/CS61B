@@ -22,7 +22,7 @@ public class Palindrome {
     }
 
     private boolean helpIsPalindrome(Deque<Character> deque) {
-        if (deque.size() == 1 || deque.size() == 0) {
+        if (deque == null || deque.size() <= 1) {
             return true;
         }
         char first = deque.removeFirst();
@@ -34,7 +34,7 @@ public class Palindrome {
     }
 
     private boolean helpIsPalindrome(Deque<Character> deque, CharacterComparator characterComparator) {
-        if (deque.size() == 1 || deque.size() == 0) {
+        if (deque == null || deque.size() <= 1) {
             return true;
         }
         char first = deque.removeFirst();
