@@ -100,7 +100,8 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     // TODO: When you get to part 5, implement the needed code to support iteration.
     private class ArrayRingBufferIterator implements Iterator<T> {
         private int index;
-        ArrayRingBufferIterator(){
+
+        ArrayRingBufferIterator() {
             index = first;
         }
 
@@ -114,7 +115,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
             T temp = rb[index];
             if (index == capacity - 1) {
                 index = 0;
-            }else {
+            } else {
                 index++;
             }
             return temp;
