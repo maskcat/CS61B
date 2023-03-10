@@ -4,6 +4,8 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -68,9 +70,9 @@ public class Game {
             }
         }
         // 2.地图中间挖一个房间
-        world = createRoom(world, (WIDTH - 1) / 2, (HEIGHT - 1) / 2, 5, 5, Direction.North);
+        world = createRoom(world, (WIDTH - 1) / 2, (HEIGHT - 1) / 2, 10, 10, Direction.North);
         currentFeature++;
-        while (currentFeature < 80) {
+        while (currentFeature < 60) {
             WallPosition wp = getRandomWall(world);
             if (wp == null) {
                 continue;
