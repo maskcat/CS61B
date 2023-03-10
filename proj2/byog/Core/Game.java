@@ -34,7 +34,7 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
+        //      Fill out this method to run the game using the input passed in,
         //      and return a 2D tile representation of the world that would have been
         //      drawn if the same inputs had been given to playWithKeyboard().
         long seed = Long.parseLong(input.substring(1, input.length() - 1));
@@ -74,7 +74,9 @@ public class Game {
             int feature = RandomUtils.uniform(RANDOM, 0, 100);
             TETile[][] temp;
             if (feature <= roomChance) {
-                temp = createRoom(world, wp.nX, wp.nY, RandomUtils.uniform(RANDOM, 6, 10), RandomUtils.uniform(RANDOM, 6, 10), wp.direction);
+                int width = RandomUtils.uniform(RANDOM, 6, 10);
+                int height = RandomUtils.uniform(RANDOM, 6, 10);
+                temp = createRoom(world, wp.nX, wp.nY, width, height, wp.direction);
                 if (temp != null) {
                     world = temp;
                     world[wp.oX][wp.oY] = Tileset.FLOOR;
@@ -324,7 +326,11 @@ public class Game {
                         return null;
                     } else if (x + 1 > WIDTH - 1 || x - 1 < 0) {
                         return null;
-                    } else if (!world[x][i].equals(Tileset.NOTHING) || !world[x + 1][i].equals(Tileset.NOTHING) || !world[x - 1][i].equals(Tileset.NOTHING)) {
+                    } else if (!world[x][i].equals(Tileset.NOTHING)) {
+                        return null;
+                    } else if (!world[x - 1][i].equals(Tileset.NOTHING) && !world[x - 1][i].equals(Tileset.WALL)) {
+                        return null;
+                    } else if (!world[x + 1][i].equals(Tileset.NOTHING) && !world[x + 1][i].equals(Tileset.WALL)) {
                         return null;
                     }
                 }
