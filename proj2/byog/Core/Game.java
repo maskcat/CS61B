@@ -11,6 +11,7 @@ public class Game {
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
     private static Random RANDOM = null;
+    private final int ROOM_CHANCE = 66;
     TERenderer ter = new TERenderer();
     private int currentFeature = 0;
 
@@ -42,12 +43,12 @@ public class Game {
         TETile[][] finalWorldFrame = null;
         switch (Character.toUpperCase(input.charAt(0))) {
             case 'N':
-                finalWorldFrame = genWorld(60);
+                finalWorldFrame = genWorld(ROOM_CHANCE);
                 break;
             case 'S':
                 break;
             default:
-                throw new RuntimeException("未定义的操作！"+input);
+                throw new RuntimeException("未定义的操作！" + input);
         }
         return finalWorldFrame;
     }
@@ -62,9 +63,9 @@ public class Game {
             }
         }
         // 2.地图中间挖一个房间
-        world = createRoom(world, (WIDTH - 1) / 2, (HEIGHT - 1) / 2, 10, 10, Direction.North);
+        world = createRoom(world, (WIDTH - 1) / 2, (HEIGHT - 1) / 2, 5, 5, Direction.North);
         currentFeature++;
-        while (currentFeature < 60) {
+        while (currentFeature < 50) {
             WallPosition wp = getRandomWall(world);
             if (wp == null) {
                 continue;
@@ -90,7 +91,7 @@ public class Game {
                 }
             }
         }
-        return world;
+        return fillWall(world);
     }
 
     private WallPosition getRandomWall(TETile[][] world) {
@@ -100,20 +101,20 @@ public class Game {
         while (i < (WIDTH - 2) * (HEIGHT - 2)) {
             int rX = RandomUtils.uniform(RANDOM, 1, WIDTH - 2);
             int rY = RandomUtils.uniform(RANDOM, 1, HEIGHT - 2);
-            if (world[rX][rY].equals(Tileset.WALL)) {
-                if (world[rX + 1][rY].equals(Tileset.FLOOR) || world[rX + 1][rY].equals(Tileset.GRASS)) {
+            if (world[rX][rY].equals(Tileset.NOTHING)) {
+                if (!world[rX + 1][rY].equals(Tileset.NOTHING) /*|| world[rX + 1][rY].equals(Tileset.GRASS)*/) {
                     wallPosition.nX = rX - 1;
                     wallPosition.nY = rY;
                     wallPosition.direction = Direction.West;
-                } else if (world[rX][rY - 1].equals(Tileset.FLOOR) || world[rX][rY - 1].equals(Tileset.GRASS)) {
+                } else if (!world[rX][rY - 1].equals(Tileset.NOTHING) /*|| world[rX][rY - 1].equals(Tileset.GRASS)*/) {
                     wallPosition.nX = rX;
                     wallPosition.nY = rY + 1;
                     wallPosition.direction = Direction.North;
-                } else if (world[rX - 1][rY].equals(Tileset.FLOOR) || world[rX - 1][rY].equals(Tileset.GRASS)) {
+                } else if (!world[rX - 1][rY].equals(Tileset.NOTHING) /*|| world[rX - 1][rY].equals(Tileset.GRASS)*/) {
                     wallPosition.nX = rX + 1;
                     wallPosition.nY = rY;
                     wallPosition.direction = Direction.East;
-                } else if (world[rX][rY + 1].equals(Tileset.FLOOR) || world[rX][rY + 1].equals(Tileset.GRASS)) {
+                } else if (!world[rX][rY + 1].equals(Tileset.NOTHING) /*|| world[rX][rY + 1].equals(Tileset.GRASS)*/) {
                     wallPosition.nX = rX;
                     wallPosition.nY = rY - 1;
                     wallPosition.direction = Direction.South;
@@ -130,108 +131,36 @@ public class Game {
     }
 
     private TETile[][] createRoom(TETile[][] world, int x, int y, int width, int height, Direction direction) {
+        if (!hasEnoughRoomSpace(world, x, y, width, height, direction)) {
+            return null;
+        }
         switch (direction) {
             case East:
                 for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                    if (i < 0 || i > HEIGHT - 1) {
-                        return null;
-                    }
                     for (int j = x; j < x + width; j++) {
-                        if (j < 0 || j > WIDTH - 1) {
-                            return null;
-                        }
-                        if (!world[j][i].equals(Tileset.NOTHING)) {
-                            return null;
-                        }
-                    }
-                }
-                for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                    for (int j = x; j < x + width; j++) {
-                        if (i == y - height / 2 || i == y + (height - 1) / 2) {
-                            world[j][i] = Tileset.WALL;
-                        } else if (j == x || j == x + width - 1) {
-                            world[j][i] = Tileset.WALL;
-                        } else {
-                            world[j][i] = Tileset.FLOOR;
-                        }
+                        world[j][i] = Tileset.FLOOR;
                     }
                 }
                 break;
             case South:
                 for (int i = y; i > y - height; i--) {
-                    if (i < 0 || i > HEIGHT - 1) {
-                        return null;
-                    }
                     for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                        if (j < 0 || j > WIDTH - 1) {
-                            return null;
-                        }
-                        if (!world[j][i].equals(Tileset.NOTHING)) {
-                            return null;
-                        }
+                        world[j][i] = Tileset.FLOOR;
                     }
                 }
-                for (int i = y; i > y - height; i--) {
-                    for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                        if (i == y || i == y - height + 1) {
-                            world[j][i] = Tileset.WALL;
-                        } else if (j == x - width / 2 || j == x + (width - 1) / 2) {
-                            world[j][i] = Tileset.WALL;
-                        } else {
-                            world[j][i] = Tileset.FLOOR;
-                        }
-                    }
-                }
+                world[RandomUtils.uniform(RANDOM, x - width / 2, x + (width + 1) / 2)][RandomUtils.uniform(RANDOM, y - height + 1, y + 1)] = Tileset.FLOWER;
                 break;
             case West:
                 for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                    if (i < 0 || i > HEIGHT - 1) {
-                        return null;
-                    }
                     for (int j = x; j > x - width; j--) {
-                        if (j < 0 || j > WIDTH - 1) {
-                            return null;
-                        }
-                        if (!world[j][i].equals(Tileset.NOTHING)) {
-                            return null;
-                        }
-                    }
-                }
-                for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                    for (int j = x; j > x - width; j--) {
-                        if (i == y - height / 2 || i == y + (height - 1) / 2) {
-                            world[j][i] = Tileset.WALL;
-                        } else if (j == x || j == x - width + 1) {
-                            world[j][i] = Tileset.WALL;
-                        } else {
-                            world[j][i] = Tileset.FLOOR;
-                        }
+                        world[j][i] = Tileset.FLOOR;
                     }
                 }
                 break;
             case North:
                 for (int i = y; i < y + height; i++) {
-                    if (i < 0 || i > HEIGHT - 1) {
-                        return null;
-                    }
                     for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                        if (j < 0 || j > WIDTH - 1) {
-                            return null;
-                        }
-                        if (!world[j][i].equals(Tileset.NOTHING)) {
-                            return null;
-                        }
-                    }
-                }
-                for (int i = y; i < y + height; i++) {
-                    for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                        if (i == y || i == y + height - 1) {
-                            world[j][i] = Tileset.WALL;
-                        } else if (j == x - width / 2 || j == x + (width - 1) / 2) {
-                            world[j][i] = Tileset.WALL;
-                        } else {
-                            world[j][i] = Tileset.FLOOR;
-                        }
+                        world[j][i] = Tileset.FLOOR;
                     }
                 }
                 break;
@@ -242,108 +171,182 @@ public class Game {
     }
 
     private TETile[][] createHallWay(TETile[][] world, int x, int y, int len, Direction direction) {
-        if (x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1) {
+        if (!hasEnoughHallWaySpace(world, x, y, len, direction)) {
             return null;
         }
         switch (direction) {
             case East:
                 for (int i = x; i < x + (len + 1); i++) {
-                    if (i > WIDTH - 1) {
-                        return null;
-                    } else if (y + 1 > HEIGHT - 1 || y - 1 < 0) {
-                        return null;
-                    } else if (!world[i][y].equals(Tileset.NOTHING)) {
-                        return null;
-                    } else if (!world[i][y - 1].equals(Tileset.NOTHING) && !world[i][y - 1].equals(Tileset.WALL)) {
-                        return null;
-                    } else if (!world[i][y + 1].equals(Tileset.NOTHING) && !world[i][y + 1].equals(Tileset.WALL)) {
-                        return null;
-                    }
-                }
-                for (int i = x; i < x + (len + 1); i++) {
-                    world[i][y - 1] = Tileset.WALL;
-                    if (i == x + len) {
-                        world[i][y] = Tileset.WALL;
-                    } else {
-                        world[i][y] = Tileset.GRASS;
-                    }
-                    world[i][y + 1] = Tileset.WALL;
+                    world[i][y] = Tileset.FLOOR;
                 }
                 break;
             case South:
                 for (int i = y; i > y - (len + 1); i--) {
-                    if (i < 0 || i > HEIGHT - 1) {
-                        return null;
-                    } else if (x + 1 > WIDTH - 1 || x - 1 < 0) {
-                        return null;
-                    } else if (!world[x][i].equals(Tileset.NOTHING)) {
-                        return null;
-                    } else if (!world[x - 1][i].equals(Tileset.NOTHING) && !world[x - 1][i].equals(Tileset.WALL)) {
-                        return null;
-                    } else if (!world[x + 1][i].equals(Tileset.NOTHING) && !world[x + 1][i].equals(Tileset.WALL)) {
-                        return null;
-                    }
-                }
-                for (int i = y; i > y - (len + 1); i--) {
-                    world[x - 1][i] = Tileset.WALL;
-                    if (i == y - len) {
-                        world[x][i] = Tileset.WALL;
-                    } else {
-                        world[x][i] = Tileset.GRASS;
-                    }
-                    world[x + 1][i] = Tileset.WALL;
+                    world[x][i] = Tileset.FLOOR;
+
                 }
                 break;
             case West:
                 for (int i = x; i > x - (len + 1); i--) {
-                    if (i > WIDTH - 1 || i < 0) {
-                        return null;
-                    } else if (y + 1 > HEIGHT - 1 || y - 1 < 0) {
-                        return null;
-                    } else if (!world[i][y].equals(Tileset.NOTHING)) {
-                        return null;
-                    } else if (!world[i][y - 1].equals(Tileset.NOTHING) && !world[i][y - 1].equals(Tileset.WALL)) {
-                        return null;
-                    } else if (!world[i][y + 1].equals(Tileset.NOTHING) && !world[i][y + 1].equals(Tileset.WALL)) {
-                        return null;
-                    }
-                }
-                for (int i = x; i > x - (len + 1); i--) {
-                    world[i][y - 1] = Tileset.WALL;
-                    if (i == x - len) {
-                        world[i][y] = Tileset.WALL;
-                    } else {
-                        world[i][y] = Tileset.GRASS;
-                    }
-                    world[i][y + 1] = Tileset.WALL;
+                    world[i][y] = Tileset.FLOOR;
                 }
                 break;
             case North:
                 for (int i = y; i < y + (len + 1); i++) {
-                    if (i > HEIGHT - 1) {
-                        return null;
-                    } else if (x + 1 > WIDTH - 1 || x - 1 < 0) {
-                        return null;
-                    } else if (!world[x][i].equals(Tileset.NOTHING)) {
-                        return null;
-                    } else if (!world[x - 1][i].equals(Tileset.NOTHING) && !world[x - 1][i].equals(Tileset.WALL)) {
-                        return null;
-                    } else if (!world[x + 1][i].equals(Tileset.NOTHING) && !world[x + 1][i].equals(Tileset.WALL)) {
-                        return null;
-                    }
-                }
-                for (int i = y; i < y + (len + 1); i++) {
-                    world[x - 1][i] = Tileset.WALL;
-                    if (i == y + len) {
-                        world[x][i] = Tileset.WALL;
-                    } else {
-                        world[x][i] = Tileset.GRASS;
-                    }
-                    world[x + 1][i] = Tileset.WALL;
+                    world[x][i] = Tileset.FLOOR;
                 }
                 break;
             default:
                 return null;
+        }
+        return world;
+    }
+
+    private boolean hasEnoughRoomSpace(TETile[][] world, int x, int y, int width, int height, Direction direction) {
+        if (direction.equals(Direction.East)) {
+            for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
+                if (i < 1 || i > HEIGHT - 2) {
+                    return false;
+                }
+                for (int j = x; j < x + width; j++) {
+                    if (j < 1 || j > WIDTH - 2) {
+                        return false;
+                    }
+                    if (!world[j][i].equals(Tileset.NOTHING)) {
+                        return false;
+                    }
+                }
+            }
+        } else if (direction.equals(Direction.South)) {
+            for (int i = y; i > y - height; i--) {
+                if (i < 1 || i > HEIGHT - 2) {
+                    return false;
+                }
+                for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
+                    if (j < 1 || j > WIDTH - 2) {
+                        return false;
+                    }
+                    if (!world[j][i].equals(Tileset.NOTHING)) {
+                        return false;
+                    }
+                }
+            }
+        } else if (direction.equals(Direction.West)) {
+            for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
+                if (i < 1 || i > HEIGHT - 2) {
+                    return false;
+                }
+                for (int j = x; j > x - width; j--) {
+                    if (j < 1 || j > WIDTH - 2) {
+                        return false;
+                    }
+                    if (!world[j][i].equals(Tileset.NOTHING)) {
+                        return false;
+                    }
+                }
+            }
+        } else if (direction.equals(Direction.North)) {
+            for (int i = y; i < y + height; i++) {
+                if (i < 1 || i > HEIGHT - 2) {
+                    return false;
+                }
+                for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
+                    if (j < 1 || j > WIDTH - 2) {
+                        return false;
+                    }
+                    if (!world[j][i].equals(Tileset.NOTHING)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean hasEnoughHallWaySpace(TETile[][] world, int x, int y, int len, Direction direction) {
+        if (direction.equals(Direction.East)) {
+            for (int i = x; i < x + (len + 1); i++) {
+                if (i > WIDTH - 2) {
+                    return false;
+                } else if (y + 1 > HEIGHT - 1 || y - 1 < 1) {
+                    return false;
+                } else if (!world[i][y].equals(Tileset.NOTHING)) {
+                    return false;
+                } else if (!world[i][y - 1].equals(Tileset.NOTHING) && !world[i][y - 1].equals(Tileset.WALL)) {
+                    return false;
+                } else if (!world[i][y + 1].equals(Tileset.NOTHING) && !world[i][y + 1].equals(Tileset.WALL)) {
+                    return false;
+                }
+            }
+        } else if (direction.equals(Direction.South)) {
+            for (int i = y; i > y - (len + 1); i--) {
+                if (i < 1 || i > HEIGHT - 2) {
+                    return false;
+                } else if (x + 1 > WIDTH - 1 || x - 1 < 1) {
+                    return false;
+                } else if (!world[x][i].equals(Tileset.NOTHING)) {
+                    return false;
+                } else if (!world[x - 1][i].equals(Tileset.NOTHING) && !world[x - 1][i].equals(Tileset.WALL)) {
+                    return false;
+                } else if (!world[x + 1][i].equals(Tileset.NOTHING) && !world[x + 1][i].equals(Tileset.WALL)) {
+                    return false;
+                }
+            }
+        } else if (direction.equals(Direction.West)) {
+            for (int i = x; i > x - (len + 1); i--) {
+                if (i > WIDTH - 1 || i < 1) {
+                    return false;
+                } else if (y + 1 > HEIGHT - 1 || y - 1 < 1) {
+                    return false;
+                } else if (!world[i][y].equals(Tileset.NOTHING)) {
+                    return false;
+                } else if (!world[i][y - 1].equals(Tileset.NOTHING) && !world[i][y - 1].equals(Tileset.WALL)) {
+                    return false;
+                } else if (!world[i][y + 1].equals(Tileset.NOTHING) && !world[i][y + 1].equals(Tileset.WALL)) {
+                    return false;
+                }
+            }
+        } else if (direction.equals(Direction.North)) {
+            for (int i = y; i < y + (len + 1); i++) {
+                if (i > HEIGHT - 2) {
+                    return false;
+                } else if (x + 1 > WIDTH - 1 || x - 1 < 1) {
+                    return false;
+                } else if (!world[x][i].equals(Tileset.NOTHING)) {
+                    return false;
+                } else if (!world[x - 1][i].equals(Tileset.NOTHING) && !world[x - 1][i].equals(Tileset.WALL)) {
+                    return false;
+                } else if (!world[x + 1][i].equals(Tileset.NOTHING) && !world[x + 1][i].equals(Tileset.WALL)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private TETile[][] fillWall(TETile[][] world) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                if (world[i][j].equals(Tileset.NOTHING)) {
+                    if (i + 1 < WIDTH - 1 && !world[i + 1][j].equals(Tileset.NOTHING) && !world[i + 1][j].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (i + 1 < WIDTH - 1 && j + 1 < HEIGHT - 1 && !world[i + 1][j + 1].equals(Tileset.NOTHING) && !world[i + 1][j + 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (i + 1 < WIDTH - 1 && j - 1 > 0 && !world[i + 1][j - 1].equals(Tileset.NOTHING) && !world[i + 1][j - 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (i - 1 > 0 && !world[i - 1][j].equals(Tileset.NOTHING) && !world[i - 1][j].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (i - 1 > 0 && j + 1 < HEIGHT - 1 && !world[i - 1][j + 1].equals(Tileset.NOTHING) && !world[i - 1][j + 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (i - 1 > 0 && j - 1 > 0 && !world[i - 1][j - 1].equals(Tileset.NOTHING) && !world[i - 1][j - 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (j + 1 < HEIGHT - 1 && !world[i][j + 1].equals(Tileset.NOTHING) && !world[i][j + 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    } else if (j - 1 > 0 && !world[i][j - 1].equals(Tileset.NOTHING) && !world[i][j - 1].equals(Tileset.WALL)) {
+                        world[i][j] = Tileset.WALL;
+                    }
+                }
+            }
         }
         return world;
     }
