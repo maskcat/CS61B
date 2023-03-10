@@ -40,7 +40,7 @@ public class Game {
         long seed = Long.parseLong(input.substring(1, input.length() - 1));
         RANDOM = new Random(seed);
         TETile[][] finalWorldFrame = null;
-        switch (input.charAt(0)) {
+        switch (Character.toUpperCase(input.charAt(0))) {
             case 'N':
                 ter.initialize(WIDTH, HEIGHT);
                 finalWorldFrame = genWorld(60);
