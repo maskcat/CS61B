@@ -4,8 +4,6 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -43,7 +41,7 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         //      and return a 2D tile representation of the world that would have been
         //      drawn if the same inputs had been given to playWithKeyboard().
-        long seed = Long.parseLong(input.substring(1,input.length()-1));
+        long seed = Long.parseLong(input.substring(1, input.length() - 1));
         RANDOM = new Random(seed);
         TETile[][] finalWorldFrame = null;
         switch (input.charAt(0)) {
@@ -153,7 +151,7 @@ public class Game {
                 }
                 for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
                     for (int j = x; j < x + width; j++) {
-                        if (i == y - height / 2 || i == y + (height - 1) / 2 ) {
+                        if (i == y - height / 2 || i == y + (height - 1) / 2) {
                             world[j][i] = Tileset.WALL;
                         } else if (j == x || j == x + width - 1) {
                             world[j][i] = Tileset.WALL;
@@ -233,7 +231,7 @@ public class Game {
                     for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
                         if (i == y || i == y + height - 1) {
                             world[j][i] = Tileset.WALL;
-                        } else if (j == x - width / 2 || j == x + (width-1) / 2) {
+                        } else if (j == x - width / 2 || j == x + (width - 1) / 2) {
                             world[j][i] = Tileset.WALL;
                         } else {
                             world[j][i] = Tileset.FLOOR;
