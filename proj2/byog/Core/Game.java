@@ -42,9 +42,7 @@ public class Game {
         TETile[][] finalWorldFrame = null;
         switch (Character.toUpperCase(input.charAt(0))) {
             case 'N':
-                ter.initialize(WIDTH, HEIGHT);
                 finalWorldFrame = genWorld(60);
-                ter.renderFrame(finalWorldFrame);
                 break;
             case 'S':
                 break;
