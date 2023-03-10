@@ -4,6 +4,8 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -11,7 +13,7 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
-    private static final Random RANDOM = new Random(4321);
+    private static Random RANDOM = null;
     private int currentFeature = 0;
 
     enum Direction {
@@ -41,9 +43,20 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         //      and return a 2D tile representation of the world that would have been
         //      drawn if the same inputs had been given to playWithKeyboard().
-        ter.initialize(WIDTH, HEIGHT);
-        TETile[][] finalWorldFrame = genWorld(40);
-        ter.renderFrame(finalWorldFrame);
+        int seed = Integer.parseInt(input.substring(1));
+        RANDOM = new Random(seed);
+        TETile[][] finalWorldFrame = null;
+        switch (input.charAt(0)) {
+            case 'N':
+                ter.initialize(WIDTH, HEIGHT);
+                finalWorldFrame = genWorld(60);
+                ter.renderFrame(finalWorldFrame);
+                break;
+            case 'S':
+                break;
+            default:
+                throw new RuntimeException("未定义的操作！");
+        }
         return finalWorldFrame;
     }
 
@@ -94,19 +107,19 @@ public class Game {
             int rX = RandomUtils.uniform(RANDOM, 1, WIDTH - 2);
             int rY = RandomUtils.uniform(RANDOM, 1, HEIGHT - 2);
             if (world[rX][rY].equals(Tileset.WALL)) {
-                if (world[rX + 1][rY].equals(Tileset.FLOOR)) {
+                if (world[rX + 1][rY].equals(Tileset.FLOOR) || world[rX + 1][rY].equals(Tileset.GRASS)) {
                     wallPosition.nX = rX - 1;
                     wallPosition.nY = rY;
                     wallPosition.direction = Direction.West;
-                } else if (world[rX][rY - 1].equals(Tileset.FLOOR)) {
+                } else if (world[rX][rY - 1].equals(Tileset.FLOOR) || world[rX][rY - 1].equals(Tileset.GRASS)) {
                     wallPosition.nX = rX;
                     wallPosition.nY = rY + 1;
                     wallPosition.direction = Direction.North;
-                } else if (world[rX - 1][rY].equals(Tileset.FLOOR)) {
+                } else if (world[rX - 1][rY].equals(Tileset.FLOOR) || world[rX - 1][rY].equals(Tileset.GRASS)) {
                     wallPosition.nX = rX + 1;
                     wallPosition.nY = rY;
                     wallPosition.direction = Direction.East;
-                } else if (world[rX][rY + 1].equals(Tileset.FLOOR)) {
+                } else if (world[rX][rY + 1].equals(Tileset.FLOOR) || world[rX][rY + 1].equals(Tileset.GRASS)) {
                     wallPosition.nX = rX;
                     wallPosition.nY = rY - 1;
                     wallPosition.direction = Direction.South;
@@ -140,7 +153,7 @@ public class Game {
                 }
                 for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
                     for (int j = x; j < x + width; j++) {
-                        if (i == y - height / 2 || i == y + (height - 1) / 2) {
+                        if (i == y - height / 2 || i == y + (height - 1) / 2 ) {
                             world[j][i] = Tileset.WALL;
                         } else if (j == x || j == x + width - 1) {
                             world[j][i] = Tileset.WALL;
@@ -191,10 +204,10 @@ public class Game {
                     }
                 }
                 for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                    for (int j = x; j > x - width - 1; j--) {
+                    for (int j = x; j > x - width; j--) {
                         if (i == y - height / 2 || i == y + (height - 1) / 2) {
                             world[j][i] = Tileset.WALL;
-                        } else if (j == x || j == x - width) {
+                        } else if (j == x || j == x - width + 1) {
                             world[j][i] = Tileset.WALL;
                         } else {
                             world[j][i] = Tileset.FLOOR;
@@ -258,7 +271,7 @@ public class Game {
                     if (i == x + len) {
                         world[i][y] = Tileset.WALL;
                     } else {
-                        world[i][y] = Tileset.FLOOR;
+                        world[i][y] = Tileset.GRASS;
                     }
                     world[i][y + 1] = Tileset.WALL;
                 }
@@ -282,7 +295,7 @@ public class Game {
                     if (i == y - len) {
                         world[x][i] = Tileset.WALL;
                     } else {
-                        world[x][i] = Tileset.FLOOR;
+                        world[x][i] = Tileset.GRASS;
                     }
                     world[x + 1][i] = Tileset.WALL;
                 }
@@ -306,7 +319,7 @@ public class Game {
                     if (i == x - len) {
                         world[i][y] = Tileset.WALL;
                     } else {
-                        world[i][y] = Tileset.FLOOR;
+                        world[i][y] = Tileset.GRASS;
                     }
                     world[i][y + 1] = Tileset.WALL;
                 }
@@ -326,7 +339,7 @@ public class Game {
                     if (i == y + len) {
                         world[x][i] = Tileset.WALL;
                     } else {
-                        world[x][i] = Tileset.FLOOR;
+                        world[x][i] = Tileset.GRASS;
                     }
                     world[x + 1][i] = Tileset.WALL;
                 }
