@@ -49,7 +49,7 @@ public class Game {
             case 'S':
                 break;
             default:
-                throw new RuntimeException("未定义的操作！");
+                throw new RuntimeException("未定义的操作！"+input);
         }
         return finalWorldFrame;
     }
