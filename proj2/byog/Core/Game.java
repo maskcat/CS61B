@@ -4,21 +4,15 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Game {
-    TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
     private static Random RANDOM = null;
+    TERenderer ter = new TERenderer();
     private int currentFeature = 0;
-
-    enum Direction {
-        East, South, West, North;
-    }
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -348,6 +342,10 @@ public class Game {
                 return null;
         }
         return world;
+    }
+
+    enum Direction {
+        East, South, West, North
     }
 
     static class WallPosition {
