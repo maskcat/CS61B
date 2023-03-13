@@ -3,22 +3,237 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
-import java.util.Random;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.*;
 
-public class Game {
+public class Game implements Serializable {
     /* Feel free to change the width and height. */
+    private static final long serialVersionUID = 1L;
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
-    private static Random RANDOM = null;
-    private final int ROOM_CHANCE = 66;
+    private Random RANDOM = null;
+    private final int ROOM_CHANCE = 40;
+    private long SEED;
     TERenderer ter = new TERenderer();
     private int currentFeature = 0;
+    private Player player;
+    private TETile[][] world = null;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+        ter.initialize(WIDTH, HEIGHT);
+        while (true) {
+            char option = menu();
+            if ('N' == option) {
+                SEED = getSeed();
+                RANDOM = new Random(SEED);
+                world = genWorld(ROOM_CHANCE);
+                ter.initialize(WIDTH, HEIGHT);
+                ter.renderFrame(world);
+                world = operator(world);
+            } else if ('L' == option) {
+                if (world == null) {
+                    int result;
+                    File file;
+                    String path;
+                    JFileChooser fileChooser = new JFileChooser();
+                    FileSystemView fsv = FileSystemView.getFileSystemView();  //注意了，这里重要的一句
+                    System.out.println(fsv.getDefaultDirectory());                //得到桌面路径
+                    fileChooser.setCurrentDirectory(fsv.getDefaultDirectory());
+                    fileChooser.setDialogTitle("请选择要上传的文件...");
+                    fileChooser.setApproveButtonText("确定");
+                    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    result = fileChooser.showOpenDialog(null);
+                    if (JFileChooser.APPROVE_OPTION == result) {
+                        path = fileChooser.getSelectedFile().getPath();
+                        System.out.println("path: " + path);
+                        file = new File(path);
+                        try {
+                            ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(file.toPath()));
+                            Game game = (Game) inputStream.readObject();
+                            this.SEED = game.SEED;
+                            this.player = game.player;
+                            this.RANDOM = game.RANDOM;
+                            world = game.world;
+                            ter.initialize(WIDTH, HEIGHT);
+                            ter.renderFrame(world);
+                            world = operator(game.world);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } else if ('C' == option) {
+                if (world != null) {
+                    ter.initialize(WIDTH, HEIGHT);
+                    ter.renderFrame(world);
+                    world = operator(world);
+                }
+            } else if ('S' == option) {
+                if (world != null) {
+                    File file = new File(System.currentTimeMillis() + "-" + SEED + ".txt");
+                    if (!file.exists()) {
+                        try {
+                            System.out.println(file.toPath());
+                            if (file.createNewFile()) {
+                                ObjectOutputStream outputStream = new ObjectOutputStream(Files.newOutputStream(file.toPath()));
+                                outputStream.writeObject(this);
+                                outputStream.close();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } else {
+                System.exit(0);
+            }
+        }
+    }
+
+    public char menu() {
+        List<Character> options = new ArrayList<>();
+        options.add('N');
+        options.add('S');
+        options.add('L');
+        options.add('C');
+        options.add('Q');
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 50));
+        StdDraw.setPenColor(Color.white);
+        StdDraw.text(WIDTH / 2d, HEIGHT - 10, "这是一个游戏");
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 20));
+        StdDraw.text(WIDTH / 2d, HEIGHT - 18, "新游戏[N]");
+        StdDraw.text(WIDTH / 2d, HEIGHT - 21, "加载[L]");
+        StdDraw.text(WIDTH / 2d, HEIGHT - 24, "继续[C]");
+        StdDraw.text(WIDTH / 2d, HEIGHT - 27, "退出[Q]");
+        StdDraw.show();
+        char option = '=';
+        while (!options.contains(option)) {
+            if (StdDraw.hasNextKeyTyped()) {
+                option = Character.toUpperCase(StdDraw.nextKeyTyped());
+            }
+        }
+        return option;
+    }
+
+    public long getSeed() {
+        StringBuilder str;
+        boolean currentIsNotS = true;
+        while (true) {
+            str = new StringBuilder();
+            StdDraw.clear(StdDraw.BLACK);
+            StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+            StdDraw.setPenColor(Color.white);
+            StdDraw.text(WIDTH / 2d, HEIGHT - 10, "请输入随机整数:");
+            StdDraw.show();
+            char input;
+            while (currentIsNotS) {
+                if (StdDraw.hasNextKeyTyped()) {
+                    input = Character.toUpperCase(StdDraw.nextKeyTyped());
+                    if (input == 'S' || input == '\n') {
+                        currentIsNotS = false;
+                        continue;
+                    }
+                    str.append(input);
+                    drawFrame(str.toString());
+                }
+            }
+            String numberStr = str.toString();
+            if (!numberStr.isEmpty() && numberStr.matches("^[0-9]*$")) {
+                break;
+            }
+            currentIsNotS = true;
+            StdDraw.clear(StdDraw.BLACK);
+            StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+            StdDraw.setPenColor(Color.green);
+            StdDraw.text(WIDTH / 2d, HEIGHT - 10, "请保证输入的为纯数字");
+            StdDraw.show();
+            StdDraw.pause(1000);
+
+        }
+        return Long.parseLong(str.toString());
+    }
+
+    private TETile[][] operator(TETile[][] world) {
+        Map<Character, Direction> map = new HashMap<>();
+        map.put('W', Direction.North);
+        map.put('S', Direction.South);
+        map.put('A', Direction.West);
+        map.put('D', Direction.East);
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char op = Character.toUpperCase(StdDraw.nextKeyTyped());
+                if (map.containsKey(op)) {
+                    world = move(world, map.get(op));
+                    ter.renderFrame(world);
+                } else if (op == '\u001B') {
+                    return world;
+                }
+            }
+        }
+    }
+
+    private TETile[][] move(TETile[][] world, Direction direction) {
+        switch (direction) {
+            case East:
+                if (world[player.x + 1][player.y].equals(Tileset.FLOOR)) {
+                    world[player.x][player.y] = Tileset.FLOOR;
+                    world[player.x + 1][player.y] = Tileset.PLAYER;
+                    player.x = player.x + 1;
+                    return world;
+                }
+                break;
+            case West:
+                if (world[player.x - 1][player.y].equals(Tileset.FLOOR)) {
+                    world[player.x][player.y] = Tileset.FLOOR;
+                    world[player.x - 1][player.y] = Tileset.PLAYER;
+                    player.x = player.x - 1;
+                    return world;
+                }
+                break;
+            case North:
+                if (world[player.x][player.y + 1].equals(Tileset.FLOOR)) {
+                    world[player.x][player.y] = Tileset.FLOOR;
+                    world[player.x][player.y + 1] = Tileset.PLAYER;
+                    player.y = player.y + 1;
+                    return world;
+                }
+                break;
+            case South:
+                if (world[player.x][player.y - 1].equals(Tileset.FLOOR)) {
+                    world[player.x][player.y] = Tileset.FLOOR;
+                    world[player.x][player.y - 1] = Tileset.PLAYER;
+                    player.y = player.y - 1;
+                    return world;
+                }
+                break;
+            default:
+                return world;
+        }
+        return world;
+    }
+
+    public void drawFrame(String s) {
+        int midWidth = WIDTH / 2;
+        int midHeight = HEIGHT / 2;
+        StdDraw.clear();
+        StdDraw.clear(Color.black);
+        // Draw the actual text
+        Font bigFont = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(bigFont);
+        StdDraw.setPenColor(Color.white);
+        StdDraw.text(midWidth, midHeight, s);
+        StdDraw.show();
     }
 
     /**
@@ -38,8 +253,8 @@ public class Game {
         //      Fill out this method to run the game using the input passed in,
         //      and return a 2D tile representation of the world that would have been
         //      drawn if the same inputs had been given to playWithKeyboard().
-        long seed = Long.parseLong(input.substring(1, input.length() - 1));
-        RANDOM = new Random(seed);
+        SEED = Long.parseLong(input.substring(1, input.length() - 1));
+        RANDOM = new Random(SEED);
         TETile[][] finalWorldFrame = null;
         switch (Character.toUpperCase(input.charAt(0))) {
             case 'N':
@@ -54,6 +269,8 @@ public class Game {
     }
 
     private TETile[][] genWorld(int roomChance) {
+        StdDraw.clear();
+        StdDraw.clear(StdDraw.BLACK);
         // 地图算法
         // 1.地图中填满土
         TETile[][] world = new TETile[WIDTH][HEIGHT];
@@ -91,7 +308,8 @@ public class Game {
                 }
             }
         }
-        return fillWall(world);
+        world = fillWall(world);
+        return genPlayer(world);
     }
 
     private WallPosition getRandomWall(TETile[][] world) {
@@ -351,15 +569,40 @@ public class Game {
         return world;
     }
 
+    private TETile[][] genPlayer(TETile[][] world) {
+        while (true) {
+            int rX = RandomUtils.uniform(RANDOM, 1, WIDTH - 2);
+            int rY = RandomUtils.uniform(RANDOM, 1, HEIGHT - 2);
+            if (world[rX][rY].equals(Tileset.FLOOR)) {
+                world[rX][rY] = Tileset.PLAYER;
+                player = new Player(rX, rY);
+                return world;
+            }
+        }
+    }
+
     enum Direction {
         East, South, West, North
     }
 
-    static class WallPosition {
+    static class WallPosition implements Serializable {
+        private static final long serialVersionUID = 1L;
         Direction direction;
         int oX;
         int oY;
         int nX;
         int nY;
+    }
+
+    static class Player implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public Player(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        int x;
+        int y;
     }
 }

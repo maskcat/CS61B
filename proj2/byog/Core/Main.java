@@ -15,8 +15,6 @@ public class Main {
         } else if (args.length == 1) {
             Game game = new Game();
             TETile[][] worldState = game.playWithInputString(args[0]);
-//            game.ter.initialize(60,40);
-//            game.ter.renderFrame(worldState);
             System.out.println(TETile.toString(worldState));
         } else {
             Game game = new Game();
