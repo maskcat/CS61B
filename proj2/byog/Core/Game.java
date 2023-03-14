@@ -31,15 +31,24 @@ public class Game implements Serializable {
      */
     public void playWithKeyboard() {
         ter.initialize(WIDTH, HEIGHT);
+        Font font = StdDraw.getFont();
         while (true) {
             char option = menu();
             if ('N' == option) {
                 SEED = getSeed();
                 RANDOM = new Random(SEED);
                 world = genWorld(ROOM_CHANCE);
-                ter.initialize(WIDTH, HEIGHT);
+                StdDraw.setFont(font);
                 ter.renderFrame(world);
-                world = operator(world);
+                while (true) {
+                    TETile[][] temp = operator(world);
+                    if (world == temp) {
+                        break;
+                    } else {
+                        world = temp;
+                    }
+                    ter.renderFrame(world);
+                }
             } else if ('L' == option) {
                 if (world == null) {
                     int result;
@@ -64,7 +73,7 @@ public class Game implements Serializable {
                             this.player = game.player;
                             this.RANDOM = game.RANDOM;
                             world = game.world;
-                            ter.initialize(WIDTH, HEIGHT);
+                            StdDraw.setFont(font);
                             ter.renderFrame(world);
                             world = operator(game.world);
                         } catch (Exception e) {
@@ -74,9 +83,16 @@ public class Game implements Serializable {
                 }
             } else if ('C' == option) {
                 if (world != null) {
-                    ter.initialize(WIDTH, HEIGHT);
                     ter.renderFrame(world);
-                    world = operator(world);
+                    while (true) {
+                        TETile[][] temp = operator(world);
+                        if (world == temp) {
+                            break;
+                        } else {
+                            world = temp;
+                        }
+                        ter.renderFrame(world);
+                    }
                 }
             } else if ('S' == option) {
                 if (world != null) {
@@ -172,12 +188,23 @@ public class Game implements Serializable {
         map.put('D', Direction.East);
         while (true) {
             if (StdDraw.hasNextKeyTyped()) {
+                StdDraw.pause(100);
                 char op = Character.toUpperCase(StdDraw.nextKeyTyped());
                 if (map.containsKey(op)) {
-                    world = move(world, map.get(op));
-                    ter.renderFrame(world);
+                    return TETile.copyOf(move(world, map.get(op)));
                 } else if (op == '\u001B') {
                     return world;
+                }
+            }
+            if (StdDraw.isMousePressed()) {
+                int x = (int) StdDraw.mouseX();
+                int y = (int) StdDraw.mouseY();
+                TETile temp = world[x][y];
+                if (!temp.equals(Tileset.NOTHING)) {
+                    StdDraw.setPenColor(Color.pink);
+                    StdDraw.textLeft(0, HEIGHT - 1, "this is " + temp.description());
+                    StdDraw.show();
+                    return TETile.copyOf(world);
                 }
             }
         }
@@ -316,9 +343,9 @@ public class Game implements Serializable {
         // 随机找到一个点
         WallPosition wallPosition = new WallPosition();
         int i = 0;
-        while (i < (WIDTH - 2) * (HEIGHT - 2)) {
-            int rX = RandomUtils.uniform(RANDOM, 1, WIDTH - 2);
-            int rY = RandomUtils.uniform(RANDOM, 1, HEIGHT - 2);
+        while (i < (WIDTH - 3) * (HEIGHT - 3)) {
+            int rX = RandomUtils.uniform(RANDOM, 2, WIDTH - 3);
+            int rY = RandomUtils.uniform(RANDOM, 2, HEIGHT - 3);
             if (world[rX][rY].equals(Tileset.NOTHING)) {
                 if (!world[rX + 1][rY].equals(Tileset.NOTHING) /*|| world[rX + 1][rY].equals(Tileset.GRASS)*/) {
                     wallPosition.nX = rX - 1;
@@ -423,11 +450,11 @@ public class Game implements Serializable {
     private boolean hasEnoughRoomSpace(TETile[][] world, int x, int y, int width, int height, Direction direction) {
         if (direction.equals(Direction.East)) {
             for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                if (i < 1 || i > HEIGHT - 2) {
+                if (i < 2 || i > HEIGHT - 3) {
                     return false;
                 }
                 for (int j = x; j < x + width; j++) {
-                    if (j < 1 || j > WIDTH - 2) {
+                    if (j < 2 || j > WIDTH - 3) {
                         return false;
                     }
                     if (!world[j][i].equals(Tileset.NOTHING)) {
@@ -437,11 +464,11 @@ public class Game implements Serializable {
             }
         } else if (direction.equals(Direction.South)) {
             for (int i = y; i > y - height; i--) {
-                if (i < 1 || i > HEIGHT - 2) {
+                if (i < 2 || i > HEIGHT - 3) {
                     return false;
                 }
                 for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                    if (j < 1 || j > WIDTH - 2) {
+                    if (j < 2 || j > WIDTH - 3) {
                         return false;
                     }
                     if (!world[j][i].equals(Tileset.NOTHING)) {
@@ -451,11 +478,11 @@ public class Game implements Serializable {
             }
         } else if (direction.equals(Direction.West)) {
             for (int i = y - height / 2; i < y + (height + 1) / 2; i++) {
-                if (i < 1 || i > HEIGHT - 2) {
+                if (i < 2 || i > HEIGHT - 3) {
                     return false;
                 }
                 for (int j = x; j > x - width; j--) {
-                    if (j < 1 || j > WIDTH - 2) {
+                    if (j < 2 || j > WIDTH - 3) {
                         return false;
                     }
                     if (!world[j][i].equals(Tileset.NOTHING)) {
@@ -465,11 +492,11 @@ public class Game implements Serializable {
             }
         } else if (direction.equals(Direction.North)) {
             for (int i = y; i < y + height; i++) {
-                if (i < 1 || i > HEIGHT - 2) {
+                if (i < 2 || i > HEIGHT - 3) {
                     return false;
                 }
                 for (int j = x - width / 2; j < x + (width + 1) / 2; j++) {
-                    if (j < 1 || j > WIDTH - 2) {
+                    if (j < 2 || j > WIDTH - 3) {
                         return false;
                     }
                     if (!world[j][i].equals(Tileset.NOTHING)) {
@@ -486,7 +513,7 @@ public class Game implements Serializable {
             for (int i = x; i < x + (len + 1); i++) {
                 if (i > WIDTH - 2) {
                     return false;
-                } else if (y + 1 > HEIGHT - 1 || y - 1 < 1) {
+                } else if (y + 1 > HEIGHT - 3 || y - 1 < 2) {
                     return false;
                 } else if (!world[i][y].equals(Tileset.NOTHING)) {
                     return false;
@@ -498,7 +525,7 @@ public class Game implements Serializable {
             }
         } else if (direction.equals(Direction.South)) {
             for (int i = y; i > y - (len + 1); i--) {
-                if (i < 1 || i > HEIGHT - 2) {
+                if (i < 2 || i > HEIGHT - 3) {
                     return false;
                 } else if (x + 1 > WIDTH - 1 || x - 1 < 1) {
                     return false;
@@ -514,7 +541,7 @@ public class Game implements Serializable {
             for (int i = x; i > x - (len + 1); i--) {
                 if (i > WIDTH - 1 || i < 1) {
                     return false;
-                } else if (y + 1 > HEIGHT - 1 || y - 1 < 1) {
+                } else if (y + 1 > HEIGHT - 3 || y - 1 < 2) {
                     return false;
                 } else if (!world[i][y].equals(Tileset.NOTHING)) {
                     return false;
@@ -526,7 +553,7 @@ public class Game implements Serializable {
             }
         } else if (direction.equals(Direction.North)) {
             for (int i = y; i < y + (len + 1); i++) {
-                if (i > HEIGHT - 2) {
+                if (i > HEIGHT - 3) {
                     return false;
                 } else if (x + 1 > WIDTH - 1 || x - 1 < 1) {
                     return false;
